@@ -50,14 +50,18 @@ class Container {
   /// Starts a docker container.
   // Throws [ContainerAlreadyRunning] if the container is already running.
   ///
-  void start() {
+  void start({bool interactive = false}) {
     if (isRunning) {
       throw ContainerAlreadyRunning();
     }
 
-    'docker start $containerid'.start(
+    final option = interactive ? ' -i ' : '';
+    'docker start $option $containerid'.start(
         progress: Progress(print, stderr: (line) => printerr(red(line))));
   }
+
+
+  
 
   /// Returns true if the container is already running.
   bool get isRunning =>
