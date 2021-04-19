@@ -60,9 +60,6 @@ class Container {
         progress: Progress(print, stderr: (line) => printerr(red(line))));
   }
 
-
-  
-
   /// Returns true if the container is already running.
   bool get isRunning =>
       "docker container inspect -f '{{.State.Running}}' $containerid"
