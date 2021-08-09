@@ -19,6 +19,17 @@ class ContainerExistsException extends DockerCliException {
   String containerName;
 }
 
+/// Thrown if the given [imageName] matched more than one
+/// image.
+class AmbiguousImageNameException extends DockerCliException {
+  /// Thrown if the given [imageName] matched more than one
+  /// image.
+  AmbiguousImageNameException(this.imageName);
+
+  /// The imageName  that was ambigous.
+  String imageName;
+}
+
 /// Throw if a docker command failed when we tried to execute it.
 class DockerCommandFailed extends DockerCliException {
   /// Throw if a docker command failed when we tried to execute it.

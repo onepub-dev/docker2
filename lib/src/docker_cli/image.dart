@@ -54,9 +54,15 @@ class Image {
   /// The tag of this image. If one wasn't supplied then 'latest' is returned.
   String? get tag => _imageName.tag ?? 'latest';
 
-  /// deletes this docker image.
-  void delete() {
-    dockerRun('image', 'rm $imageid');
+  /// Delete the docker image.
+  ///
+  ///
+  void delete({bool force = false}) {
+    if (force) {
+      dockerRun('image', 'rm -f $imageid');
+    } else {
+      dockerRun('image', 'rm $imageid');
+    }
   }
 
   /// Pulls a docker image from a remote repository using the

@@ -130,10 +130,6 @@ class ImageName {
       }
     }
 
-    if (tag == null || tag.isEmpty) {
-      tag = 'latest';
-    }
-
     if (name.isEmpty) {
       throw ArgumentError(
           'The name component may not be empty. Invalid fullname: $fullname');

@@ -37,7 +37,7 @@ class Containers {
       final name = parts[5];
 
       // sometimes the imageid is actually the image name.
-      final image = Images().findByFullname(imageid);
+      final image = Images().findByName(imageid);
       if (image != null) {
         /// the imageid that we parsed actually contained an image name
         /// so lets replace that with the actual id.

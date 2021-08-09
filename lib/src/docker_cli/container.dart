@@ -70,6 +70,9 @@ class Container {
   }
 
   /// Starts a docker container.
+  /// If [daemon] is true (the default) then the container is started
+  /// as a daemon. When [daemon] is false then we pass the interactive and
+  /// attach arguments to the docker start command to allow full interaction.
   // Throws [ContainerAlreadyRunning] if the container is already running.
   ///
   /// The [args] and [argString] are appended to the command

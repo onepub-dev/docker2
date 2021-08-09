@@ -10,20 +10,23 @@ import 'images.dart';
 /// Top level class generally used as the starting point manage
 /// docker containers and images.
 class Docker {
-  /// Searches for and returns an image with the full
-  /// name [fullName].
+  /// Searches for and returns the image that matches
+  /// [imageName].
+  /// If more than one image matches then an [AmbiguousImageNameException]
+  /// is thrown.
+  /// If no matching image is found a null is returned.
+  ///
   /// The fullName is of the form registry/repo/name:tag
   /// The registry, repo and tag are optional.
-  /// If the tag is not provided then 'latest' is assumed.
   ///
   /// e.g.
   /// dockerhub.io/canonical/ubuntu:latest
   /// canonical/ubuntu
   /// ubuntu
   /// ubuntu:latest
-  Image? findImageByName(String fullName) {
-    ImageName.fromName(fullName);
-    return Images().findByFullname(fullName);
+  Image? findImageByName(String imageName) {
+    ImageName.fromName(imageName);
+    return Images().findByName(imageName);
   }
 
   /// Returns an [Image] for the give [imageId].
@@ -52,7 +55,7 @@ class Docker {
     final _imageName = ImageName.fromName(fullname);
 
     Image? image = Image.fromName(_imageName.fullname)..pull();
-    image = Images().findByFullname(_imageName.fullname);
+    image = Images().findByName(_imageName.fullname);
     if (image == null) {
       throw ImageNotFoundException(fullname);
     }
@@ -67,32 +70,6 @@ class Docker {
   Container create(Image image, String containerName,
           {List<String>? args, String? argString}) =>
       image.create(containerName, args: args, argString: argString);
-
-  // /// Starts a container with the name [containerName].
-  // /// and returns a [Container] object for that container
-  // /// If the container doesn't exists then a [ContainerNotFoundException] will be thrown
-  // Container start(String containerName) {
-  //   var container = Containers().findByName(containerName);
-  //   if (container == null) throw ContainerNotFoundException();
-
-  //   container.start();
-  //   return container;
-  // }
-
-  // /// Stops the container with the name [containerName].
-  // /// If the container doesn't exist then a [ContainerNotFoundException]
-  // /// is thrown.
-  // ///
-  // /// If the container is not running then false is returns.
-  // bool stop(String containerName) {
-  //   var container = Containers().findByName(containerName);
-  //   if (container == null) throw ContainerNotFoundException();
-
-  //   if (!container.isRunning) return false;
-
-  //   container.stop();
-  //   return true;
-  // }
 
   /// Returns a list of containers
   /// If [excludeStopped] is true (defaults to false) then

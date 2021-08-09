@@ -1,5 +1,7 @@
 import 'package:dcli/dcli.dart';
+
 import 'docker.dart';
+import 'exceptions.dart';
 import 'image.dart';
 
 /// Class used to obtain a list of images.
@@ -50,7 +52,7 @@ class Images {
   bool existsByFullname({
     required String fullname,
   }) =>
-      findByFullname(fullname) != null;
+      findByName(fullname) != null;
 
   /// Returns true an image exists with the given  name parts.
   bool existsByParts(
@@ -73,22 +75,30 @@ class Images {
     return null;
   }
 
-  /// full name of the image using the format repo/name:tag
-  /// The repo component is optional but the name and tag
-  /// must be passed otherwise an [ArgumentError]
-  /// will be thrown.
-  Image? findByFullname(String fullname) {
-    final match = Image.fromName(fullname);
+  /// Searches for and returns the image that matches
+  /// [imageName].
+  /// If more than one image matches then an [AmbiguousImageNameException]
+  /// is thrown.
+  /// If no matching image is found a null is returned.
+  /// If the name component is not passed then an [ArgumentError] is thrown.
+  ///
+  /// The fullName is of the form registry/repo/name:tag
+  /// The registry, repo and tag are optional.
+  ///
+  /// e.g.
+  /// dockerhub.io/canonical/ubuntu:latest
+  /// canonical/ubuntu
+  /// ubuntu
+  /// ubuntu:latest
+  Image? findByName(String imageName) {
+    final match = Image.fromName(imageName);
 
-    if (match.tag == null) {
-      throw ArgumentError('You must provide the name and tag, found $fullname');
-    }
     Settings().verbose('Match ${match.repository} ${match.name} ${match.tag}');
 
     final list = findByParts(
         repository: match.repository, name: match.name, tag: match.tag);
     if (list.length > 1) {
-      throw StateError(fullname);
+      throw AmbiguousImageNameException(imageName);
     }
     if (list.isEmpty) {
       return null;
@@ -120,6 +130,6 @@ class Images {
   Image? pull({required String fullname}) {
     dockerRun('pull', fullname);
     // flushCache();
-    return findByFullname(fullname);
+    return findByName(fullname);
   }
 }
