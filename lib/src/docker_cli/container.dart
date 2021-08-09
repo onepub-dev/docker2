@@ -1,86 +1,127 @@
-import 'package:dcli/dcli.dart';
-import 'containers.dart';
+import 'docker.dart';
 import 'exceptions.dart';
-
 import 'image.dart';
 import 'images.dart';
 
-/// Provides methods for manipulating a docker container.
+/// A docker container.
 class Container {
-  /// Construct a Container instance
+  /// construct a docker container object from its parts.
   Container({
     required this.containerid,
     required this.imageid,
     required this.created,
     required this.status,
     required this.ports,
-    required this.names,
+    required this.name,
   });
 
-  /// The containers id
+  /// id of the container (the 12 char version)
   String containerid;
 
-  /// The id of the image this container is based on.
+  /// the id of the image this container is based on.
   String imageid;
 
-  /// The date the container was created.
+  /// the create date/time of this container.
   String created;
 
-  /// The status of the container.
+  /// The status of this container.
   String status;
 
-  ///
+  /// The ports used by this container
   String ports;
 
-  /// the names of the container.
-  String names;
+  /// The name of this container.
+  String name;
 
-  /// Returns the image the docker container is based on.
+  /// Returns true if [other] has the same containerid as this
+  /// container.
+  /// We use the shorter 12 character version of the id.
+  bool isSame(Container other) => containerid == other.containerid;
+
+  @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
+  bool operator ==(covariant Container other) {
+    if (this == other) {
+      return true;
+    }
+
+    if (containerid == other.containerid) {
+      return true;
+    }
+
+    return false;
+  }
+
+  @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
+  int get hashCode => containerid.hashCode;
+
+  /// returns the image based on this image's id.
+  /// We actually refetch the list of images to ensure
+  /// we have the complete set of details.
   Image? get image => Images().findByImageId(imageid);
 
-  /// Stops the container if it is running.
-  /// Throws [ContainerNotRunning] if the container is not currently running.
+  /// Tops tthe docker container if it is running.
+  /// If the container is not running then no action is taken.
   void stop() {
-    if (!isRunning) {
-      throw ContainerNotRunning();
+    if (isRunning) {
+      dockerRun('stop', containerid);
     }
-    'docker stop $containerid'.run;
   }
 
   /// Starts a docker container.
   // Throws [ContainerAlreadyRunning] if the container is already running.
   ///
-  void start({bool interactive = false}) {
+  /// The [args] and [argString] are appended to the command
+  /// and allow you to add abitrary arguments.
+  /// The [args] list is added before the [argString].
+  void start({List<String>? args, String? argString, bool daemon = true}) {
     if (isRunning) {
       throw ContainerAlreadyRunning();
     }
 
-    final option = interactive ? ' -i ' : '';
-    'docker start $option $containerid'.start(
-        progress: Progress(print, stderr: (line) => printerr(red(line))));
+    var cmdArgs = containerid;
+
+    if (args != null) {
+      cmdArgs += ' ${args.join(' ')}';
+    }
+    if (argString != null) {
+      cmdArgs += ' $argString';
+    }
+
+    if (!daemon) {
+      cmdArgs = '--attach --interactive $cmdArgs';
+    }
+    dockerRun('start', cmdArgs);
   }
 
-  /// Returns true if the container is already running.
+  /// Returns true if the container is currently running.
   bool get isRunning =>
-      "docker container inspect -f '{{.State.Running}}' $containerid"
-          .firstLine ==
+      dockerRun('container', "inspect -f '{{.State.Running}}' $containerid")
+          .first ==
       'true';
 
-  /// Delete the container.
+  /// deletes this docker container.
   void delete() {
-    'docker container rm $containerid'.run;
-
-    Containers().flushCache();
+    dockerRun('container', 'rm $containerid');
   }
 
-  /// Print the docker logs for the container to stdout.
-  void showLogs() {
-    'docker logs $containerid'.run;
+  /// writes this containers docker logs to the console
+  /// If [limit] is 0 (the default) all log lines a output.
+  /// If [limit] is > 0 then only the last [limit] lines are output.
+  void showLogs({int limit = 0}) {
+    var limitFlag = '';
+    if (limit != 0) {
+      limitFlag = '-n $limit';
+    }
+    dockerRun('logs', '$limitFlag $containerid');
   }
 
   /// Attaches to the running container and starts a bash command prompt.
   void cli() {
-    'docker exec -it $containerid /bin/bash'
-        .start(nothrow: true, progress: Progress.print(), terminal: true);
+    dockerRun('exec', '-it $containerid /bin/bash');
   }
+
+  @override
+  String toString() => '$containerid ${image?.fullname} $status $name';
 }

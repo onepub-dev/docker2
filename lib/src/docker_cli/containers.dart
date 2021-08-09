@@ -1,66 +1,60 @@
-import 'package:dcli/dcli.dart';
-
 import 'container.dart';
+import 'docker.dart';
 import 'image.dart';
 import 'images.dart';
 
-/// Provides methods to obtain a list of docker containers.
+/// Holds a list of Docker containers.
 class Containers {
-  /// Factory instance of Containers.
+  /// Factory ctor
   factory Containers() => _self;
-
   Containers._internal();
 
   static final _self = Containers._internal();
 
-  final _containerCache = <Container>[];
-
   /// returns a list of containers.
-  /// The list is cached in memory so if you create a new
-  /// container you need to call [flushCache].
   List<Container> containers({bool excludeStopped = false}) {
-    if (_containerCache.isEmpty) {
-      var cmd =
-          // ignore: lines_longer_than_80_chars
-          'docker container ls --format "table {{.ID}}|{{.Image}}|{{.CreatedAt}}|{{.Status}}|{{.Ports}}|{{.Names}}"';
-      if (!excludeStopped) {
-        cmd += ' --all';
-      }
-      final lines = cmd.toList(skipLines: 1);
+    final containerCache = <Container>[];
 
-      for (final line in lines) {
-        final parts = line.split('|');
-        final containerid = parts[0];
-        var imageid = parts[1];
-        final created = parts[2];
-        final status = parts[3];
-        final ports = parts[4];
-        final names = parts[5];
-
-        // sometimes the imageid is actually the image name.
-        final image = Images().findByFullname(imageid);
-        if (image != null) {
-          /// the imageid that we parsed actually contained an image name
-          /// so lets replace that with the actual id.
-          imageid = image.imageid!;
-        }
-
-        final container = Container(
-            containerid: containerid,
-            imageid: imageid,
-            created: created,
-            status: status,
-            ports: ports,
-            names: names);
-        _containerCache.add(container);
-      }
+    //if (containerCache.isEmpty) {
+    var args =
+        '''ls --format "table {{.ID}}|{{.Image}}|{{.CreatedAt}}|{{.Status}}|{{.Ports}}|{{.Names}}"''';
+    if (!excludeStopped) {
+      args += ' --all';
     }
-    return _containerCache;
-  }
 
-  /// Flush the list of containers that we have cached
-  void flushCache() {
-    _containerCache.clear();
+    final lines = dockerRun('container', args)
+        // remove the heading.
+        .toList()
+          ..removeAt(0);
+
+    for (final line in lines) {
+      final parts = line.split('|');
+      final containerid = parts[0];
+      var imageid = parts[1];
+      final created = parts[2];
+      final status = parts[3];
+      final ports = parts[4];
+      final name = parts[5];
+
+      // sometimes the imageid is actually the image name.
+      final image = Images().findByFullname(imageid);
+      if (image != null) {
+        /// the imageid that we parsed actually contained an image name
+        /// so lets replace that with the actual id.
+        imageid = image.imageid!;
+      }
+
+      final container = Container(
+          containerid: containerid,
+          imageid: imageid,
+          created: created,
+          status: status,
+          ports: ports,
+          name: name);
+      containerCache.add(container);
+      //}
+    }
+    return containerCache;
   }
 
   /// True if a container with the given [containerid] exists.
@@ -82,9 +76,14 @@ class Containers {
   Container? findByContainerId(String containerid,
       {bool excludeStopped = false}) {
     final list = containers(excludeStopped: excludeStopped);
+    var _containerid = containerid;
+
+    if (_containerid.length > 12) {
+      _containerid = _containerid.substring(0, 12);
+    }
 
     for (final container in list) {
-      if (containerid == container.containerid) {
+      if (_containerid == container.containerid) {
         return container;
       }
     }
@@ -110,13 +109,12 @@ class Containers {
 
   /// Finds and returns the container with given name.
   /// Returns null if the container doesn't exist.
-  /// assumes that a container only has one name :)
   /// if [excludeStopped] is true then exclude containers that are not running.
   Container? findByName(String name, {bool excludeStopped = false}) {
     final list = containers(excludeStopped: excludeStopped);
 
     for (final container in list) {
-      if (name == container.names) {
+      if (name == container.name) {
         return container;
       }
     }

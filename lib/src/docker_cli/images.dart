@@ -1,7 +1,8 @@
 import 'package:dcli/dcli.dart';
+import 'docker.dart';
 import 'image.dart';
 
-/// Classo used to obtain a list of images.
+/// Class used to obtain a list of images.
 class Images {
   /// Returns a factory [Images]
   factory Images() => _self;
@@ -9,48 +10,34 @@ class Images {
 
   static final _self = Images._internal();
 
-  final _imageCache = <Image>[];
-
   /// Gets a list of of docker images.
-  /// The list is cached to improve performance.
-  /// If you create a image locally then you will need to call
-  /// [flushCache] to see the new image in this list.
   List<Image> get images {
-    if (_imageCache.isEmpty) {
-      var lines = 'docker images'.toList(skipLines: 1);
+    final imageCache = <Image>[];
+    final lines = dockerRun('images',
+            '''--format "table {{.ID}}|{{.Repository}}|{{.Tag}}|{{.CreatedAt}}|{{.Size}}"''')
+        // remove the heading.
+        .toList()
+          ..removeAt(0);
 
-      const cmd =
-          // ignore: lines_longer_than_80_chars
-          'docker images --format "table {{.ID}}|{{.Repository}}|{{.Tag}}|{{.CreatedAt}}|{{.Size}}"';
-      // print(cmd);
+    for (final line in lines) {
+      final parts = line.split('|');
+      final imageid = parts[0];
+      final repositoryAndName = parts[1];
+      final tag = parts[2];
+      final created = parts[3];
+      final size = parts[4];
 
-      lines = cmd.toList(skipLines: 1);
-
-      for (final line in lines) {
-        final parts = line.split('|');
-        final imageid = parts[0];
-        final repositoryAndName = parts[1];
-        final tag = parts[2];
-        final created = parts[3];
-        final size = parts[4];
-
-        final image = Image(
-            repositoryAndName: repositoryAndName,
-            tag: tag,
-            imageid: imageid,
-            created: created,
-            size: size);
-        _imageCache.add(image);
-      }
+      final image = Image(
+          repositoryAndName: repositoryAndName,
+          tag: tag,
+          imageid: imageid,
+          created: created,
+          size: size);
+      imageCache.add(image);
     }
+    // }
 
-    return _imageCache;
-  }
-
-  /// Flushes the in memory list images.
-  /// You will need to call this if you create a new image.
-  void flushCache() {
-    _imageCache.clear();
+    return imageCache;
   }
 
   /// Returns true if an image with the given id returns true.
@@ -70,7 +57,7 @@ class Images {
           {required String repository,
           required String name,
           required String tag}) =>
-      findByParts(repository: repository, name: name, tag: tag) != null;
+      findByParts(repository: repository, name: name, tag: tag).isNotEmpty;
 
   /// Finds an image with the given [imageid].
   ///
@@ -86,39 +73,53 @@ class Images {
     return null;
   }
 
-  /// full name of the format repo/name:tag
+  /// full name of the image using the format repo/name:tag
+  /// The repo component is optional but the name and tag
+  /// must be passed otherwise an [ArgumentError]
+  /// will be thrown.
   Image? findByFullname(String fullname) {
     final match = Image.fromName(fullname);
 
+    if (match.tag == null) {
+      throw ArgumentError('You must provide the name and tag, found $fullname');
+    }
     Settings().verbose('Match ${match.repository} ${match.name} ${match.tag}');
 
-    return findByParts(
+    final list = findByParts(
         repository: match.repository, name: match.name, tag: match.tag);
+    if (list.length > 1) {
+      throw StateError(fullname);
+    }
+    if (list.isEmpty) {
+      return null;
+    }
+    return list[0];
   }
 
-  /// Find an image by its name parts.
-  /// Returns null if it can find the image.
-  Image? findByParts(
-      {required String repository,
-      required String? name,
+  /// Returns a list of images that match the passed
+  /// parts. The [name] part is the only compulsory part.
+  /// If no matches are found then an empty list is returned
+  List<Image> findByParts(
+      {required String? repository,
+      required String name,
       required String? tag}) {
     final list = images;
+    final found = <Image>[];
 
     for (final image in list) {
-      if (repository == image.repository &&
-          name == image.name &&
-          tag == image.tag) {
-        return image;
+      if (image.isSame(repository: repository, name: name, tag: tag)) {
+        found.add(image);
       }
     }
-    return null;
+
+    return found;
   }
 
   /// Runs the docker pull command to pull the
   /// image with name [fullname]
   Image? pull({required String fullname}) {
-    'docker pull $fullname'.run;
-    flushCache();
+    dockerRun('pull', fullname);
+    // flushCache();
     return findByFullname(fullname);
   }
 }

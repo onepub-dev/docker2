@@ -1,116 +1,136 @@
-import 'package:dcli/dcli.dart';
-
-import '../../docker2.dart';
+import 'container.dart';
+import 'containers.dart';
+import 'docker.dart';
+import 'exceptions.dart';
+import 'image_name.dart';
 
 /// Represents a docker image.
 class Image {
   /// Creates an image with the given properties.
   /// Note: this doesn't create a docker image just
   /// an in memory representation of one.
+  /// Use [Docker().create] to create an image.
   Image(
       {required String repositoryAndName,
-      required this.tag,
+      required String tag,
       required this.imageid,
       required this.created,
-      required this.size}) {
-    final repoAndName = splitRepoAndName(repositoryAndName);
-    repository = repoAndName.repo;
-    name = repoAndName.name;
-  }
+      required this.size})
+      : _imageName =
+            ImageName.fromRepositoryAndName(repositoryAndName, tag: tag);
 
-  /// Creates an image with the given [fullname].
+  /// Creates an image with the given [imageName].
   /// Note: this doesn't create a docker image just
   /// an in memory representation of one.
-  Image.fromName(String fullname)
+  Image.fromName(String imageName)
       : imageid = null,
         created = null,
-        size = null {
-    final _fullname = splitFullname(fullname);
+        size = null,
+        _imageName = ImageName.fromName(imageName);
 
-    repository = _fullname.repo;
-    name = _fullname.name;
-    tag = _fullname.tag;
-  }
+  final ImageName _imageName;
 
-  /// repository name of this image.
-  late final String repository;
-
-  /// name of this image.
-  late final String? name;
-
-  /// tag name of this image.
-  late final String? tag;
-
-  /// The imageid of this image if known
+  /// The id of this image. We use the short 12 char verison.
   final String? imageid;
 
-  /// The date the image was created if known
+  /// The date time this image was created.
   final String? created;
 
-  /// The size of the image if known.
+  /// The size on disk of this image in bytes.
   final String? size;
 
   /// Returns the full name of the image
-  String get fullname => '$repository/$name:$tag';
+  String get fullname => _imageName.fullname;
 
-  /// Takes a docker repo/name:tag string and splits it into
-  /// three components.
-  static _Fullname splitFullname(String fullname) {
-    String repo;
-    String? name;
-    String? tag;
+  /// simple name of this image.
+  String get name => _imageName.name;
 
-    Settings().verbose(fullname);
+  /// regsitry where this image is located.
+  String? get registry => _imageName.registry;
 
-    if (fullname.contains('/')) {
-      var parts = fullname.split('/');
-      repo = parts[0];
-      if (parts[1].contains(':')) {
-        parts = parts[1].split(':');
-        name = parts[0];
-        tag = parts[1];
-      } else {
-        name = parts[1];
-      }
-    } else {
-      if (fullname.contains(':')) {
-        final parts = fullname.split(':');
-        repo = parts[0];
-        tag = parts[1];
-      } else {
-        repo = fullname;
-      }
-    }
+  /// repository name of this image.
+  String? get repository => _imageName.repository;
 
-    return _Fullname(repo, name, tag);
+  /// The tag of this image. If one wasn't supplied then 'latest' is returned.
+  String? get tag => _imageName.tag ?? 'latest';
+
+  /// deletes this docker image.
+  void delete() {
+    dockerRun('image', 'rm $imageid');
   }
 
-  /// Takes a docker repo/name string and splits it into
-  /// two components.
-  static _RepoAndName splitRepoAndName(String repoAndName) {
-    final parts = repoAndName.split('/');
-    if (parts.length != 2) {
-      return _RepoAndName(repoAndName, null);
-    }
-    return _RepoAndName(parts[0], parts[1]);
-  }
-
-  /// Delete the docker image.
-  ///
-  ///
-  void delete({bool force = false}) {
-    if (force) {
-      'docker image rm -f $imageid'.run;
-    } else {
-      'docker image rm $imageid'.run;
-    }
-    Images().flushCache();
-  }
-
-  /// Pull the docker image.
+  /// Pulls a docker image from a remote repository using the
+  /// images [fullname]
   void pull() {
-    'docker pull $imageid'.run;
-    Images().flushCache();
+    dockerRun('pull', fullname);
+  }
+
+  /// creates a container with the name [containerName] using
+  /// this image.
+  /// Returns the newly created [Container].
+  /// Throws a [ContainerExistsException] if a container with
+  /// the passed [containerName] already exists.
+  /// The [args] and [argString] are appended to the command
+  /// and allow you to add abitrary arguments.
+  /// The [args] list is added before the [argString].
+  Container create(String containerName,
+      {List<String>? args, String? argString}) {
+    if (Containers().findByName(containerName) != null) {
+      throw ContainerExistsException(containerName);
+    }
+
+    var cmdArgs = '--name $containerName $fullname';
+
+    if (args != null) {
+      cmdArgs += ' ${args.join(' ')}';
+    }
+    if (argString != null) {
+      cmdArgs += ' $argString';
+    }
+
+    final lines = dockerRun('create', cmdArgs);
+
+    final containerid = lines[0];
+
+    final container = Containers().findByContainerId(containerid);
+
+    if (container == null) {
+      throw ContainerNotFoundException();
+    }
+    return container;
+  }
+
+  /// Returns true if the pass name components match
+  /// this image.
+  /// This method allows you to do a partial match by
+  /// passing only the components you want to match on.
+  /// The [name] must be passed.
+  bool isSame(
+      {required String name,
+      String? registry,
+      String? repository,
+      String? tag}) {
+    if (registry != null) {
+      if (this.registry != registry) {
+        return false;
+      }
+    }
+
+    if (repository != null) {
+      if (this.repository != repository) {
+        return false;
+      }
+    }
+
+    if (this.name != name) {
+      return false;
+    }
+
+    if (tag != null && this.tag != tag) {
+      return false;
+    }
+
+    return true;
   }
 
   @override
@@ -119,19 +139,5 @@ class Image {
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
-  int get hashCode => 17 * 37 + imageid.hashCode;
-}
-
-class _RepoAndName {
-  _RepoAndName(this.repo, this.name);
-  String repo;
-  String? name;
-}
-
-class _Fullname {
-  _Fullname(this.repo, this.name, this.tag);
-
-  String repo;
-  String? name;
-  String? tag;
+  int get hashCode => imageid.hashCode;
 }
