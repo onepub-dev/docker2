@@ -53,11 +53,11 @@ class ImageName {
   String get fullname {
     var fname = '';
     if (registry != null) {
-      fname += '$registry\\';
+      fname += '$registry/';
     }
 
     if (repository != null) {
-      fname += '$repository\\';
+      fname += '$repository/';
     }
 
     fname += name;
