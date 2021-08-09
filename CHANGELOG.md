@@ -1,3 +1,6 @@
+# 2.0.1
+Fixed a bug in the fullname. Was using the wrong slash. Added unit tests for same.
+
 
 # 2.0.0
 ## added
