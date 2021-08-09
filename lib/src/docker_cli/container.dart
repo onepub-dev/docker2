@@ -122,7 +122,7 @@ class Container {
 
   /// Attaches to the running container and starts a bash command prompt.
   void cli() {
-    dockerRun('exec', '-it $containerid /bin/bash');
+    dockerRun('exec', '-it $containerid /bin/bash', terminal: true);
   }
 
   @override

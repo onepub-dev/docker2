@@ -79,9 +79,9 @@ class Docker {
 
   /// internal function to provide a consistent method of handling
   /// failed execution of the docker command.
-  List<String> _dockerRun(String cmd, String args) {
-    final progress =
-        'docker $cmd $args'.start(nothrow: true, progress: Progress.capture());
+  List<String> _dockerRun(String cmd, String args, {bool terminal = false}) {
+    final progress = 'docker $cmd $args'
+        .start(nothrow: true, terminal: terminal, progress: Progress.capture());
 
     if (progress.exitCode != 0) {
       throw DockerCommandFailed(
@@ -92,5 +92,5 @@ class Docker {
 }
 
 /// runs the passed docker command.
-List<String> dockerRun(String cmd, String args) =>
-    Docker()._dockerRun(cmd, args);
+List<String> dockerRun(String cmd, String args, {bool terminal = false}) =>
+    Docker()._dockerRun(cmd, args, terminal: terminal);
