@@ -92,10 +92,12 @@ class Container {
       cmdArgs += ' $argString';
     }
 
+    var terminal = false;
     if (!daemon) {
       cmdArgs = '--attach --interactive $cmdArgs';
+      terminal = true;
     }
-    dockerRun('start', cmdArgs);
+    dockerRun('start', cmdArgs, terminal: terminal);
   }
 
   /// Returns true if the container is currently running.
