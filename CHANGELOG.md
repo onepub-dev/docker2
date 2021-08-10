@@ -1,3 +1,7 @@
+# 2.0.2
+Added docker run command as it looks like the create and run commands handle the docker ports flag differently.
+Fixed bug where the docker cli command wasn't attaching as we were not running as a terminal.
+
 # 2.0.1
 Fixed a bug in the fullname. Was using the wrong slash. Added unit tests for same.
 
