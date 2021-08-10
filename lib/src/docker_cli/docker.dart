@@ -71,6 +71,34 @@ class Docker {
           {List<String>? args, String? argString}) =>
       image.create(containerName, args: args, argString: argString);
 
+  /// Creates and starts a docker container.
+  /// If [daemon] is true (the default) then the container is started
+  /// as a daemon. When [daemon] is false then we pass the interactive and
+  /// attach arguments to the docker start command to allow full interaction.
+  // Throws [ContainerAlreadyRunning] if the container is already running.
+  ///
+  /// The [args] and [argString] are appended to the command
+  /// and allow you to add abitrary arguments.
+  /// The [args] list is added before the [argString].
+  void run(Image image,
+      {List<String>? args, String? argString, bool daemon = true}) {
+    var cmdArgs = '';
+
+    if (args != null) {
+      cmdArgs += ' ${args.join(' ')}';
+    }
+    if (argString != null) {
+      cmdArgs += ' $argString';
+    }
+
+    var terminal = false;
+    if (!daemon) {
+      cmdArgs = '--attach --interactive $cmdArgs';
+      terminal = true;
+    }
+    dockerRun('run', '$cmdArgs ${image.fullname}', terminal: terminal);
+  }
+
   /// Returns a list of containers
   /// If [excludeStopped] is true (defaults to false) then
   /// only running containers will be returned.
