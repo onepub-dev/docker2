@@ -25,7 +25,7 @@ class Containers {
     final lines = dockerRun('container', args)
         // remove the heading.
         .toList()
-          ..removeAt(0);
+      ..removeAt(0);
 
     for (final line in lines) {
       final parts = line.split('|');
@@ -36,8 +36,15 @@ class Containers {
       final ports = parts[4];
       final name = parts[5];
 
-      // sometimes the imageid is actually the image name.
-      final image = Images().findByName(imageid);
+      var image = Images().findByImageId(imageid);
+      if (image == null) {
+        // sometimes the imageid is actually the image name.
+        final list = Images().findAllByName(imageid);
+        if (list.isNotEmpty) {
+          image = list.first;
+        }
+      }
+
       if (image != null) {
         /// the imageid that we parsed actually contained an image name
         /// so lets replace that with the actual id.

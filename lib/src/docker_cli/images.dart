@@ -19,7 +19,7 @@ class Images {
             '''--format "table {{.ID}}|{{.Repository}}|{{.Tag}}|{{.CreatedAt}}|{{.Size}}"''')
         // remove the heading.
         .toList()
-          ..removeAt(0);
+      ..removeAt(0);
 
     for (final line in lines) {
       final parts = line.split('|');
@@ -91,12 +91,7 @@ class Images {
   /// ubuntu
   /// ubuntu:latest
   Image? findByName(String imageName) {
-    final match = Image.fromName(imageName);
-
-    Settings().verbose('Match ${match.repository} ${match.name} ${match.tag}');
-
-    final list = findByParts(
-        repository: match.repository, name: match.name, tag: match.tag);
+    final list = findAllByName(imageName);
     if (list.length > 1) {
       throw AmbiguousImageNameException(imageName);
     }
@@ -104,6 +99,17 @@ class Images {
       return null;
     }
     return list[0];
+  }
+
+  /// returns a list of images with the given [imageName]
+  List<Image> findAllByName(String imageName) {
+    final match = Image.fromName(imageName);
+
+    Settings().verbose('Match ${match.repository} ${match.name} ${match.tag}');
+
+    final list = findByParts(
+        repository: match.repository, name: match.name, tag: match.tag);
+    return list;
   }
 
   /// Returns a list of images that match the passed
