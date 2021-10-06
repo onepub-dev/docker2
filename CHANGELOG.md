@@ -1,3 +1,7 @@
+# 2.0.3
+- Fixed bug where if mulitple images had the same name then an error was being thrown when you attempt to get a containerbyname.
+- improvements to documenaton.
+
 # 2.0.2
 Added docker run command as it looks like the create and run commands handle the docker ports flag differently.
 Fixed bug where the docker cli command wasn't attaching as we were not running as a terminal.
