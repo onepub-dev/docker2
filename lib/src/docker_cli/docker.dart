@@ -39,6 +39,9 @@ class Docker {
       Containers().findByContainerId(containerId);
 
   /// Searches for a container with the given [containerName].
+  /// If more than container has the same name the first
+  /// container will be returned.
+  /// Use [containers] to get a complete list of containers.
   /// Returns null if a container could not be found.
   Container? findContainerByName(String containerName) =>
       Containers().findByName(containerName);

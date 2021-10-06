@@ -1,6 +1,6 @@
 @Timeout(Duration(seconds: 45))
-import 'package:docker2/docker2.dart';
 import 'package:dcli/dcli.dart' hide equals;
+import 'package:docker2/docker2.dart';
 import 'package:test/test.dart';
 
 void main() {
