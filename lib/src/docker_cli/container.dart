@@ -1,7 +1,12 @@
+import 'dart:convert';
+
+import 'containers.dart';
 import 'docker.dart';
 import 'exceptions.dart';
 import 'image.dart';
 import 'images.dart';
+import 'volume.dart';
+import 'volumes.dart';
 
 /// A docker container.
 class Container {
@@ -14,6 +19,27 @@ class Container {
     required this.ports,
     required this.name,
   });
+
+  /// Creates a container from [image] binding the passed
+  /// [Volume]s into the container.
+  factory Container.create(Image image,
+      {List<VolumeMount> volumes = const <VolumeMount>[],
+      bool readonly = false}) {
+    var volarg = '';
+    if (volumes.isNotEmpty) {
+      for (final mount in volumes) {
+        final readonlyArg = readonly ? ',readonly' : '';
+
+        // ignore: use_string_buffers
+        volarg += "--mount 'type=volume,source=${mount.volume.name}"
+            ",destination=${mount.mountPath}$readonlyArg'";
+      }
+    }
+    final containerid =
+        dockerRun('container', 'create $volarg ${image.name}').first;
+
+    return Containers().findByContainerId(containerid)!;
+  }
 
   /// id of the container (the 12 char version)
   String containerid;
@@ -39,9 +65,9 @@ class Container {
   bool isSame(Container other) => containerid == other.containerid;
 
   @override
-  // ignore: avoid_equals_and_hash_code_on_mutable_classes
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes, hash_and_equals
   bool operator ==(covariant Container other) {
-    if (this == other) {
+    if (identical(this, other)) {
       return true;
     }
 
@@ -50,6 +76,36 @@ class Container {
     }
 
     return false;
+  }
+
+  /// returns the list of volumes attached to this container.
+  List<Volume> get volumes {
+    final volumes = <Volume>[];
+
+    final line =
+        dockerRun('inspect', '$containerid --format "{{json .Mounts}}"').first;
+
+    if (line == '[]') {
+      return volumes;
+    }
+
+    final list = jsonDecode(line) as List<dynamic>;
+    for (final v in list) {
+      // ignore: avoid_dynamic_calls
+      final type = v['Type'] as String;
+      if (type == 'volume') {
+        // ignore: avoid_dynamic_calls
+        final name = v['Name']! as String;
+        final volume = Volumes().findByName(name);
+        if (volume == null) {
+          throw UnknownVolumeException(
+              'The container $containerid contains an unknown Volume $name');
+        }
+        volumes.add(volume);
+      }
+    }
+
+    return volumes;
   }
 
   @override
@@ -129,4 +185,18 @@ class Container {
 
   @override
   String toString() => '$containerid ${image?.fullname} $status $name';
+}
+
+/// Describes a [Volume] and where it is to be mounted
+/// in a container.
+class VolumeMount {
+  /// Describes a [Volume] and where it is to be mounted
+  /// in a container.
+  VolumeMount(this.volume, this.mountPath);
+
+  /// The volume to mount.
+  Volume volume;
+
+  /// The path within the container the volume is to be mounted into.
+  String mountPath;
 }

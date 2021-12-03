@@ -6,6 +6,8 @@ import 'exceptions.dart';
 import 'image.dart';
 import 'image_name.dart';
 import 'images.dart';
+import 'volume.dart';
+import 'volumes.dart';
 
 /// Top level class generally used as the starting point manage
 /// docker containers and images.
@@ -107,6 +109,9 @@ class Docker {
   /// only running containers will be returned.
   List<Container> containers({bool excludeStopped = false}) =>
       Containers().containers(excludeStopped: excludeStopped);
+
+  /// Returns the list of volumes
+  List<Volume> volumes() => Volumes().volumes();
 
   /// internal function to provide a consistent method of handling
   /// failed execution of the docker command.

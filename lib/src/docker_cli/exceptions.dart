@@ -30,6 +30,40 @@ class AmbiguousImageNameException extends DockerCliException {
   String imageName;
 }
 
+/// Thrown if the given [label] matched more than one
+/// image.
+class InvalidVolumeLabelException extends DockerCliException {
+  /// Thrown if a  volume label does not match the expect key=value format.
+  InvalidVolumeLabelException(this.label);
+
+  /// The imageName  that was ambigous.
+  String label;
+}
+
+/// Thrown if the volume create failed.
+class VolumeCreateException extends DockerCliException {
+  /// Thrown if the volume create failed.
+  VolumeCreateException(this.message);
+
+  /// error message.
+  String message;
+
+  @override
+  String toString() => message;
+}
+
+/// Thrown if you try to access a volume by a non-existant name
+class UnknownVolumeException extends DockerCliException {
+  /// Thrown if you try to access a volume by a non-existant name
+  UnknownVolumeException(this.message);
+
+  /// error message.
+  String message;
+
+  @override
+  String toString() => message;
+}
+
 /// Throw if a docker command failed when we tried to execute it.
 class DockerCommandFailed extends DockerCliException {
   /// Throw if a docker command failed when we tried to execute it.

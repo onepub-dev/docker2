@@ -141,7 +141,8 @@ class Image {
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
-  bool operator ==(covariant Image other) => imageid == other.imageid;
+  bool operator ==(covariant Image other) =>
+      (identical(this, other)) || imageid == other.imageid;
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes

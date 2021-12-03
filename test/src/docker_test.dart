@@ -68,7 +68,7 @@ void main() {
     c2.delete();
   });
 
-  test('docker delete comtainer', () async {
+  test('docker delete container', () async {
     final imagePulled = Docker().pull('hello-world');
 
     if (Docker().findContainerByName('test_container') == null) {
