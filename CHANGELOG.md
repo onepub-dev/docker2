@@ -1,3 +1,6 @@
+# 2.1.0
+- Added apis for creating/deleting list volumes.
+
 # 2.0.3
 - Fixed bug where if mulitple images had the same name then an error was being thrown when you attempt to get a containerbyname.
 - improvements to documenaton.

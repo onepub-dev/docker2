@@ -34,4 +34,6 @@ Example:
         sleep(1);
     }
     container.delete();
+
+    Docker().volumes;
 ```
