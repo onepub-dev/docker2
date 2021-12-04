@@ -1,9 +1,11 @@
+import 'package:dcli/dcli.dart';
 import 'package:docker2/docker2.dart';
+import 'package:docker2/src/docker_cli/exceptions.dart';
 import 'package:test/test.dart';
 
 void main() {
   test('container create', () async {
-    final images = Images().findAllByName('hello-world');
+    final images = Images().findAllByName('hello-world:latest');
 
     Image? hellow;
     if (images.isNotEmpty) {
@@ -12,7 +14,7 @@ void main() {
       }
       hellow = images.first;
     } else {
-      hellow = Images().pull(fullname: 'hello-world');
+      hellow = Images().pull(fullname: 'hello-world:latest');
       expect(hellow != null, isTrue);
     }
 
@@ -23,7 +25,7 @@ void main() {
   });
 
   test('container create with volume', () async {
-    final images = Images().findAllByName('hello-world');
+    final images = Images().findAllByName('hello-world:latest');
 
     Image? hellow;
     if (images.isNotEmpty) {
@@ -32,7 +34,7 @@ void main() {
       }
       hellow = images.first;
     } else {
-      hellow = Images().pull(fullname: 'hello-world');
+      hellow = Images().pull(fullname: 'hello-world:latest');
       expect(hellow != null, isTrue);
     }
     // create volume.
@@ -49,5 +51,12 @@ void main() {
     expect(theOne.mountpoint == volume.mountpoint, isTrue);
 
     container.delete();
+  });
+
+  test('Delete non existant container', () {
+    final hellow = Images().pull(fullname: 'hello-world:latest');
+    expect(hellow != null, isTrue);
+    final container = Container.create(hellow!)..delete();
+    expect(container.delete, throwsA(isA<DockerCommandFailed>()));
   });
 }
