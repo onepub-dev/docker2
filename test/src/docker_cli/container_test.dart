@@ -1,4 +1,3 @@
-import 'package:dcli/dcli.dart';
 import 'package:docker2/docker2.dart';
 import 'package:docker2/src/docker_cli/exceptions.dart';
 import 'package:test/test.dart';

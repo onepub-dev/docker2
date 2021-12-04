@@ -1,3 +1,6 @@
+# 2.1.2
+- Fixed bug in volume.create when a null name was passed. It resulted a volume name null rather than docker generating a uuid.
+
 # 2.1.1
 - Fixed a bug in Images().find commands. The tag wasn't being set.
 
