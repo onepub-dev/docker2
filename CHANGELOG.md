@@ -1,3 +1,6 @@
+# 2.1.1
+- Fixed a bug in Images().find commands. The tag wasn't being set.
+
 # 2.1.0
 - Added apis for creating/deleting list volumes.
 
