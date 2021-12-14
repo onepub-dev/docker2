@@ -32,7 +32,7 @@ class ImageName {
     name = parsed.name;
     repository = parsed.repository;
     registry = parsed.registry;
-    tag = parsed.tag;
+    this.tag = parsed.tag;
   }
 
   /// The registry where this image is located.
