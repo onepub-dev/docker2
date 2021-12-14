@@ -296,7 +296,7 @@ packages:
     source: hosted
     version: "1.5.0"
   posix:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: posix
       url: "https://pub.dartlang.org"
