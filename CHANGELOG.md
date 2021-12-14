@@ -1,3 +1,6 @@
+# 2.2.0
+- removed posix.
+
 # 2.1.2
 - Fixed bug in volume.create when a null name was passed. It resulted a volume name null rather than docker generating a uuid.
 

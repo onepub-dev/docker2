@@ -1,5 +1,5 @@
 name: docker2
-version: 2.1.2
+version: 2.2.0
 description: Simple library for viewing and controlling docker images and containers.
 repository: https://github.com/noojee/docker2
 environment: 
