@@ -1,3 +1,6 @@
+# 2.2.2
+- Added a build and publish method.
+
 # 2.2.0
 - removed posix.
 
