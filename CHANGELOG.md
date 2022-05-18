@@ -1,3 +1,7 @@
+# 2.2.3
+Added optional workingDirectory to build function.
+
+
 # 2.2.2
 - Added a build and publish method.
 
