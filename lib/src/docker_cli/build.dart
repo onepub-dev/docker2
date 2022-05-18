@@ -11,7 +11,7 @@ import '../../docker2.dart';
 /// You can pass additional docker build args in the [buildArgs] argument.
 /// The args should be passed in the form ['--arg=value']
 ///
-/// If passed, the [workingDirectory] is used to when running the
+/// If passed, the [workingDirectory] is used when running the
 /// docker build command. This is important as it affects what
 /// files the docker build command will add to its context.
 /// If not passed then the current working directory will be used.
