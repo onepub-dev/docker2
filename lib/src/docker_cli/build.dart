@@ -10,17 +10,25 @@ import '../../docker2.dart';
 ///
 /// You can pass additional docker build args in the [buildArgs] argument.
 /// The args should be passed in the form ['--arg=value']
+///
+/// If passed, the [workingDirectory] is used to when running the
+/// docker build command. This is important as it affects what
+/// files the docker build command will add to its context.
+/// If not passed then the current working directory will be used.
 Image build(
     {required String pathToDockerFile,
     required String imageName,
     required String version,
     bool clean = false,
     List<String> buildArgs = const <String>[],
-    String? repository}) {
+    String? repository,
+    String? workingDirectory}) {
   var cleanArg = '';
   if (clean) {
     cleanArg = ' --no-cache';
   }
+
+  workingDirectory ??= pwd;
 
   final tag =
       tagName(repository: repository, imageName: imageName, version: version);
