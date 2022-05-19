@@ -1,3 +1,6 @@
+# 2.2.5
+- Fixed a bug where the build args passed to build where being passed incorrectly.
+
 # 2.2.4
 - Fixed a bug in build. The workingDirectory was being ignored.
 - grammar.
