@@ -1,3 +1,7 @@
+# 2.2.4
+- Fixed a bug in build. The workingDirectory was being ignored.
+- grammar.
+
 # 2.2.3
 Added optional workingDirectory to build function.
 
