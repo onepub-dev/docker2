@@ -35,7 +35,7 @@ Image build(
 
   'docker  build ${buildArgs.join(' ')}$cleanArg -t $tag'
           ' -f $pathToDockerFile .'
-      .run;
+      .start(workingDirectory: workingDirectory);
 
   return Image.fromName(tag);
 }
