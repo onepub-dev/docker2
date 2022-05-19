@@ -9,7 +9,7 @@ import '../../docker2.dart';
 /// will be run with the --no-cache flag set.
 ///
 /// You can pass additional docker build args in the [buildArgs] argument.
-/// The args should be passed in the form ['--arg=value']
+/// The args should be passed in the form ['arg=value']
 ///
 /// If passed, the [workingDirectory] is used when running the
 /// docker build command. This is important as it affects what
@@ -33,7 +33,14 @@ Image build(
   final tag =
       tagName(repository: repository, imageName: imageName, version: version);
 
-  'docker  build ${buildArgs.join(' ')}$cleanArg -t $tag'
+  final buildArgList = StringBuffer();
+  if (buildArgs.isNotEmpty) {
+    for (final arg in buildArgs) {
+      buildArgList.write('--build-arg $arg ');
+    }
+  }
+
+  'docker  build $buildArgList $cleanArg -t $tag'
           ' -f $pathToDockerFile .'
       .start(workingDirectory: workingDirectory);
 
