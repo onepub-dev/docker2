@@ -1,3 +1,10 @@
+/* Copyright (C) S. Brett Sutton - All Rights Reserved
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Proprietary and confidential
+ * Written by Brett Sutton <bsutton@onepub.dev>, Jan 2022
+ */
+
+
 /// Base exception for all exceptions thrown by Docker2.
 class DockerCliException implements Exception {}
 
