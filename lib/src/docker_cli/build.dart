@@ -4,7 +4,6 @@
  * Written by Brett Sutton <bsutton@onepub.dev>, Jan 2022
  */
 
-
 import 'package:dcli/dcli.dart';
 
 import '../../docker2.dart';
@@ -22,6 +21,8 @@ import '../../docker2.dart';
 /// docker build command. This is important as it affects what
 /// files the docker build command will add to its context.
 /// If not passed then the current working directory will be used.
+///
+/// Pass [showProgress] == false to only show errors.
 Image build(
     {required String pathToDockerFile,
     required String imageName,
@@ -29,7 +30,8 @@ Image build(
     bool clean = false,
     List<String> buildArgs = const <String>[],
     String? repository,
-    String? workingDirectory}) {
+    String? workingDirectory,
+    bool showProgress = true}) {
   var cleanArg = '';
   if (clean) {
     cleanArg = ' --no-cache';
@@ -46,18 +48,20 @@ Image build(
       buildArgList.write('--build-arg $arg ');
     }
   }
+  final progress = showProgress ? Progress.print() : Progress.printStdErr();
 
   'docker  build $buildArgList $cleanArg -t $tag'
           ' -f $pathToDockerFile .'
-      .start(workingDirectory: workingDirectory);
+      .start(workingDirectory: workingDirectory, progress: progress);
 
   return Image.fromName(tag);
 }
 
 // Publishes the image to a docker repository.
 // The [image]'s repository must be set.
-void publish({required Image image}) {
-  'docker push ${image.fullname}'.run;
+void publish({required Image image, bool showProgress = true}) {
+  final progress = showProgress ? Progress.print() : Progress.printStdErr();
+  'docker push ${image.fullname}'.start(progress: progress);
 }
 
 String tagName(
