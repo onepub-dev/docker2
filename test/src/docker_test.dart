@@ -5,8 +5,6 @@
  * Written by Brett Sutton <bsutton@onepub.dev>, Jan 2022
  */
 
-
-
 import 'package:dcli/dcli.dart' hide equals;
 import 'package:docker2/docker2.dart';
 import 'package:test/test.dart';

@@ -4,7 +4,6 @@
  * Written by Brett Sutton <bsutton@onepub.dev>, Jan 2022
  */
 
-
 import 'docker.dart';
 import 'exceptions.dart';
 import 'volume.dart';

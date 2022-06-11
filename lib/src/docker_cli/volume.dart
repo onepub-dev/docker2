@@ -4,7 +4,6 @@
  * Written by Brett Sutton <bsutton@onepub.dev>, Jan 2022
  */
 
-
 // ignore_for_file: unnecessary_cast
 
 import '../../docker2.dart';

@@ -4,7 +4,6 @@
  * Written by Brett Sutton <bsutton@onepub.dev>, Jan 2022
  */
 
-
 /// Simple class used to pass additional command line args to
 /// docker commands.
 class Arg {

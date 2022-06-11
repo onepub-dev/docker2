@@ -1,3 +1,7 @@
+# 2.2.7
+- Added showProgress option to build function. If false we only show errors.
+- added copyright notices.
+
 # 2.2.5
 - Fixed a bug where the build args passed to build where being passed incorrectly.
 
