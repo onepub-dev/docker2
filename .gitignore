@@ -1,3 +1,4 @@
 .failed_tracker
 .dart_tool
 .history
+.packages

@@ -65,9 +65,9 @@ class Image {
   ///
   void delete({bool force = false}) {
     if (force) {
-      dockerRun('image', 'rm -f $imageid');
+      dockerRun('image', 'rm -f ${_imageName.fullname}');
     } else {
-      dockerRun('image', 'rm $imageid');
+      dockerRun('image', 'rm ${_imageName.fullname}');
     }
   }
 
