@@ -1,3 +1,8 @@
+# 2.2.8
+- Merge pull request #3 from rlsutton1/main
+- change delete to use image name so it can delete tags
+- move to using lint_hard.
+
 # 2.2.7
 - Added showProgress option to build function. If false we only show errors.
 - added copyright notices.
