@@ -1,3 +1,5 @@
+# 3.0.0
+- upgraded to dart 2.19
 # 2.2.8
 - Merge pull request #3 from rlsutton1/main
 - change delete to use image name so it can delete tags
