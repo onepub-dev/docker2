@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 @Timeout(Duration(seconds: 45))
 library;
 
