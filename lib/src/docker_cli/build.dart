@@ -33,7 +33,6 @@ Image build(
     List<String> buildArgs = const <String>[],
     String? repository,
     String? workingDirectory,
-    
     bool showProgress = true}) {
   var cleanArg = '';
   if (clean) {
@@ -52,8 +51,6 @@ Image build(
     }
   }
   final progress = showProgress ? Progress.print() : Progress.printStdErr();
-
-
 
   'docker  build $buildArgList $cleanArg -t $tag'
           ' -f $pathToDockerFile .'

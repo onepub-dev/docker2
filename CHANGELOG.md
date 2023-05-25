@@ -1,3 +1,6 @@
+# 4.0.1
+- Added environment args to the run command.
+
 # 4.0.0
 - upgraded to dart 3.x
 - upgraded to latest dcli version.
