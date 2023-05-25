@@ -87,12 +87,17 @@ class Docker {
   /// as a daemon. When [daemon] is false then we pass the interactive and
   /// attach arguments to the docker start command to allow full interaction.
   // Throws [ContainerAlreadyRunning] if the container is already running.
+  /// from you existing enviornment by passing a list of environment
+  /// variable names in [environmentVars].
   ///
   /// The [args] and [argString] are appended to the command
   /// and allow you to add abitrary arguments.
   /// The [args] list is added before the [argString].
   void run(Image image,
-      {List<String>? args, String? argString, bool daemon = true}) {
+      {List<String>? args,
+      String? argString,
+      List<String> environmentVars = const <String>[],
+      bool daemon = true}) {
     var cmdArgs = '';
 
     if (args != null) {
@@ -102,12 +107,19 @@ class Docker {
       cmdArgs += ' $argString';
     }
 
+    final envVars = StringBuffer();
+    if (environmentVars.isNotEmpty) {
+      for (final env in environmentVars) {
+        envVars.write('-e $env ');
+      }
+    }
+
     var terminal = false;
     if (!daemon) {
       cmdArgs = '--attach --interactive $cmdArgs';
       terminal = true;
     }
-    dockerRun('run', '$cmdArgs ${image.fullname}', terminal: terminal);
+    dockerRun('run', '$cmdArgs $envVars ${image.fullname}', terminal: terminal);
   }
 
   /// Returns a list of containers
