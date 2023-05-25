@@ -1,3 +1,9 @@
+# 4.0.0
+- upgraded to dart 3.x
+- upgraded to latest dcli version.
+- added an option to pass environment vars to the build function. 
+- updated the linter to not allow the print statement to be used.
+
 # 3.0.0
 - upgraded to dart 2.19
 # 2.2.8
