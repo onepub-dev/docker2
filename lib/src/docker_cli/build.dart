@@ -17,6 +17,10 @@ import '../../docker2.dart';
 /// You can pass additional docker build args in the [buildArgs] argument.
 /// The args should be passed in the form ['arg=value']
 ///
+/// You can tell the docker build to pick up environment variables
+/// from you existing enviornment by passing a list of environment
+/// variable names in [environmentVars].
+///
 /// If passed, the [workingDirectory] is used when running the
 /// docker build command. This is important as it affects what
 /// files the docker build command will add to its context.
@@ -31,6 +35,7 @@ Image build(
     List<String> buildArgs = const <String>[],
     String? repository,
     String? workingDirectory,
+    List<String> environmentVars = const <String>[],
     bool showProgress = true}) {
   var cleanArg = '';
   if (clean) {
@@ -50,7 +55,14 @@ Image build(
   }
   final progress = showProgress ? Progress.print() : Progress.printStdErr();
 
-  'docker  build $buildArgList $cleanArg -t $tag'
+  final envVars = StringBuffer();
+  if (environmentVars.isNotEmpty) {
+    for (final env in environmentVars) {
+      envVars.write('-e $env ');
+    }
+  }
+
+  'docker  build $buildArgList $envVars $cleanArg -t $tag'
           ' -f $pathToDockerFile .'
       .start(workingDirectory: workingDirectory, progress: progress);
 
