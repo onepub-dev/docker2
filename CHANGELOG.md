@@ -1,3 +1,6 @@
+# 4.0.2
+- upgraded dcli version to 3.x
+
 # 4.0.1
 - Added environment args to the run command.
 
