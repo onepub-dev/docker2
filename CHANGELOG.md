@@ -1,3 +1,7 @@
+# 4.0.3
+- added new method Image.containers to return a list of containers
+  created from the image.
+
 # 4.0.2
 - upgraded dcli version to 3.x
 

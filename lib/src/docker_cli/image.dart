@@ -112,6 +112,9 @@ class Image {
     return container;
   }
 
+  // return a list of containers created from this image
+  List<Container> containers() => Containers().findByImage(this);
+
   /// Returns true if the pass name components match
   /// this image.
   /// This method allows you to do a partial match by
