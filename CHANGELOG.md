@@ -1,3 +1,7 @@
+# 4.1.0
+- Added new method containers to Image class which returns  a set of contains created from  the image.
+- added new pull switch to the build method.
+
 # 4.0.3
 - added new method Image.containers to return a list of containers
   created from the image.

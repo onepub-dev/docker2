@@ -30,6 +30,7 @@ Image build(
     required String imageName,
     required String version,
     bool clean = false,
+    bool pull = false,
     List<String> buildArgs = const <String>[],
     String? repository,
     String? workingDirectory,
@@ -37,6 +38,10 @@ Image build(
   var cleanArg = '';
   if (clean) {
     cleanArg = ' --no-cache';
+  }
+  var pullArg = '';
+  if (pull) {
+    pullArg = ' --pull';
   }
 
   workingDirectory ??= pwd;
@@ -52,7 +57,7 @@ Image build(
   }
   final progress = showProgress ? Progress.print() : Progress.printStdErr();
 
-  'docker  build $buildArgList $cleanArg -t $tag'
+  'docker  build $pullArg $buildArgList $cleanArg -t $tag'
           ' -f $pathToDockerFile .'
       .start(workingDirectory: workingDirectory, progress: progress);
 
