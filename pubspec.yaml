@@ -1,6 +1,5 @@
 name: docker2
 version: 4.1.0
-publish_to: https://onepub.dev/api/jbbxpsdavu/
 description: Simple library for viewing and controlling docker images and containers.
 repository: https://github.com/noojee/docker2
 environment: 
