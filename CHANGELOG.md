@@ -1,3 +1,7 @@
+# 4.2.0
+- upgraded to dcli 3.1.0
+- added Images.cached() ctor to improve performance.
+
 # 4.1.0
 - Added new method containers to Image class which returns  a set of contains created from  the image.
 - added new pull switch to the build method.

@@ -15,6 +15,7 @@ import 'package:test/test.dart';
 
 void main() {
   setUpAll(() {
+    Settings().setVerbose(enabled: true);
     'docker rm hello-world'.start(nothrow: true, progress: Progress.devNull());
     'docker container rm test_container'
         .start(nothrow: true, progress: Progress.devNull());
@@ -61,8 +62,19 @@ void main() {
 
   test('containers', () {
     final imagePulled = Docker().pull('alpine');
-    final c1 = Docker().create(imagePulled, 'test_container1');
-    final c2 = Docker().create(imagePulled, 'test_container2');
+    const tc1 = 'test_container1';
+    var container = Containers().findByName(tc1);
+    if (container != null) {
+      container.delete();
+    }
+    final c1 = Docker().create(imagePulled, tc1);
+    const tc2 = 'test_container2';
+    container = Containers().findByName(tc2);
+    if (container != null) {
+      container.delete();
+    }
+
+    final c2 = Docker().create(imagePulled, tc2);
 
     final containers = Docker().containers();
 

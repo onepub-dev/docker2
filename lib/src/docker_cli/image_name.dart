@@ -95,7 +95,7 @@ class ImageName {
     String name;
     String? tag;
 
-    Settings().verbose(fullname);
+    verbose(() => fullname);
 
     if (fullname.contains('/')) {
       var parts = fullname.split('/');

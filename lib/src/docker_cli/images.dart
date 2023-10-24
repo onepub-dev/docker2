@@ -14,13 +14,29 @@ import 'image.dart';
 class Images {
   /// Returns a factory [Images]
   factory Images() => _self;
-  Images._internal();
+
+  /// Call this version to cache the images between calls.
+  Images.cached() {
+    _imageCache = _loadImages();
+  }
+
+  Images._internal() : _imageCache = null;
+
+  late final List<Image>? _imageCache;
 
   static final _self = Images._internal();
 
   /// Gets a list of of docker images.
   List<Image> get images {
-    final imageCache = <Image>[];
+    if (_imageCache != null) {
+      return _imageCache!;
+    } else {
+      return _loadImages();
+    }
+  }
+
+  List<Image> _loadImages() {
+    final images = <Image>[];
     final lines = dockerRun('images',
             '''--format "table {{.ID}}|{{.Repository}}|{{.Tag}}|{{.CreatedAt}}|{{.Size}}"''')
         // remove the heading.
@@ -41,11 +57,11 @@ class Images {
           imageid: imageid,
           created: created,
           size: size);
-      imageCache.add(image);
+      images.add(image);
     }
     // }
 
-    return imageCache;
+    return images;
   }
 
   /// Returns true if an image with the given id returns true.
@@ -111,7 +127,7 @@ class Images {
   List<Image> findAllByName(String imageName) {
     final match = Image.fromName(imageName);
 
-    Settings().verbose('Match ${match.repository} ${match.name} ${match.tag}');
+    verbose(() => 'Match ${match.repository} ${match.name} ${match.tag}');
 
     final list = findByParts(
         repository: match.repository, name: match.name, tag: match.tag);

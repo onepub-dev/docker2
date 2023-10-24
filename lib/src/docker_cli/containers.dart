@@ -33,6 +33,7 @@ class Containers {
         .toList()
       ..removeAt(0);
 
+    final images = Images.cached();
     for (final line in lines) {
       final parts = line.split('|');
       final containerid = parts[0];
@@ -42,10 +43,10 @@ class Containers {
       final ports = parts[4];
       final name = parts[5];
 
-      var image = Images().findByImageId(imageid);
+      var image = images.findByImageId(imageid);
       if (image == null) {
         // sometimes the imageid is actually the image name.
-        final list = Images().findAllByName(imageid);
+        final list = images.findAllByName(imageid);
         if (list.isNotEmpty) {
           image = list.first;
         }
