@@ -1,3 +1,5 @@
+# 4.3.0-alpha.1
+- experiment with latest version of dcli 4.x alpha
 # 4.2.0
 - upgraded to dcli 3.1.0
 - added Images.cached() ctor to improve performance.
