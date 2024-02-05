@@ -34,7 +34,8 @@ Image build(
     List<String> buildArgs = const <String>[],
     String? repository,
     String? workingDirectory,
-    bool showProgress = true}) {
+    bool showProgress = true,
+    bool buildx = false}) {
   var cleanArg = '';
   if (clean) {
     cleanArg = ' --no-cache';
@@ -57,12 +58,35 @@ Image build(
   }
   final progress = showProgress ? Progress.print() : Progress.printStdErr();
 
-  'docker  build $pullArg $buildArgList $cleanArg -t $tag'
+  final buildxFlag = buildx ? 'buildx' : '';
+  'docker $buildxFlag build $pullArg $buildArgList $cleanArg -t $tag'
           ' -f $pathToDockerFile .'
       .start(workingDirectory: workingDirectory, progress: progress);
 
   return Image.fromName(tag);
 }
+
+Image buildx(
+        {required String pathToDockerFile,
+        required String imageName,
+        required String version,
+        bool clean = false,
+        bool pull = false,
+        List<String> buildArgs = const <String>[],
+        String? repository,
+        String? workingDirectory,
+        bool showProgress = true}) =>
+    build(
+        pathToDockerFile: pathToDockerFile,
+        imageName: imageName,
+        version: version,
+        clean: clean,
+        pull: pull,
+        buildArgs: buildArgs,
+        repository: repository,
+        workingDirectory: workingDirectory,
+        showProgress: showProgress,
+        buildx: true);
 
 // Publishes the image to a docker repository.
 // The [image]'s repository must be set.
