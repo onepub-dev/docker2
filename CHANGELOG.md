@@ -1,3 +1,6 @@
+# 4.5.0-alpha.8
+- upgraded to dcli 4.x alpha
+
 # 4.3.1
 - release for robert.
 
