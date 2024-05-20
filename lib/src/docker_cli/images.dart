@@ -29,7 +29,7 @@ class Images {
   /// Gets a list of of docker images.
   List<Image> get images {
     if (_imageCache != null) {
-      return _imageCache!;
+      return _imageCache;
     } else {
       return _loadImages();
     }
