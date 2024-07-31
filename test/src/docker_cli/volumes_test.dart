@@ -15,7 +15,7 @@ void main() {
     final volume = Volume.create();
     testVolume(volume);
 
-    withTempFile((path) {
+    await withTempFileAsync((path) async {
       final name = basename(path);
       final t2 = Volume.create(name: name);
       testVolume(t2);
@@ -26,7 +26,7 @@ void main() {
     final volume = Volume.create();
     testVolume(volume);
 
-    withTempFile((path) {
+    await withTempFileAsync((path) async {
       final name = basename(path);
       final t2 = Volume.create(name: name);
       testVolume(t2);
