@@ -1,3 +1,6 @@
+# 4.7.0
+- upgraded to dcli 6.x
+
 # 4.6.0
 - upgraded to dcli 5.x
 
