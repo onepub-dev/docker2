@@ -6,6 +6,8 @@
 
 // ignore_for_file: unnecessary_cast
 
+import 'package:dcli/dcli.dart';
+
 import '../../docker2.dart';
 import 'exceptions.dart';
 
@@ -68,7 +70,17 @@ class Volume {
     final givenName =
         dockerRun('volume', 'create ${name ?? ''}  --driver $driver').first;
 
-    final volume = Volumes().findByName(givenName);
+    Volume? volume;
+    var retry = 10;
+
+    /// The volume isn't always immediately visible so we wait a little.
+    while (volume == null && retry > 0) {
+      volume = Volumes().findByName(givenName);
+      if (volume == null) {
+        sleep(1);
+      }
+      retry--;
+    }
     if (volume == null) {
       throw VolumeCreateException(
           'Unable to find the newly created volume $name');

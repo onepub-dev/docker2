@@ -1,3 +1,8 @@
+# 4.9.0
+- added a sleep to volume create as the volume isn't always immediately
+available to the ls command.
+- upgraded to dcli 7.x
+
 # 4.7.0
 - upgraded to dcli 6.x
 
