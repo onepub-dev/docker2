@@ -4,17 +4,32 @@
  * Written by Brett Sutton <bsutton@onepub.dev>, Jan 2022
  */
 
-// ignore_for_file: unnecessary_cast
-
 import 'package:dcli/dcli.dart';
+import 'package:meta/meta.dart';
 
 import '../../docker2.dart';
 import 'exceptions.dart';
 
 /// A docker container.
+@immutable
 class Volume {
+  /// The name of this volume.
+  final String name;
+
+  /// Driver of this volume
+  final String driver;
+
+  /// host path where the volume lives
+  final String mountpoint;
+
+  /// Labels
+  final List<VolumeLabel> labels;
+
+  /// The scope of the volume.
+  final String scope;
+
   /// construct a docker container object from its parts.
-  Volume({
+  const Volume({
     required this.name,
     required this.driver,
     required this.mountpoint,
@@ -22,27 +37,11 @@ class Volume {
     required this.scope,
   });
 
-  /// The name of this volume.
-  String name;
-
-  /// Driver of this volume
-  String driver;
-
-  /// host path where the volume lives
-  String mountpoint;
-
-  /// Labels
-  List<VolumeLabel> labels;
-
-  /// The scope of the volume.
-  String scope;
-
   /// Returns true if [other] has the same name as this
   /// volume.
   bool isSame(Volume other) => name == other.name;
 
   @override
-  // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(covariant Volume other) {
     if (identical(this, other)) {
       return true;
@@ -90,6 +89,7 @@ class Volume {
   }
 
   @override
+  // the name is immutable.
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
   int get hashCode => name.hashCode;
 

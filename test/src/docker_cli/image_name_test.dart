@@ -8,7 +8,7 @@ import 'package:docker2/docker2.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('image name ...', () async {
+  test('image name ...', () {
     var imageName = ImageName.fromName('ubuntu');
     expect(imageName.registry, isNull);
     expect(imageName.repository, isNull);

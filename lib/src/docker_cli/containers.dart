@@ -11,11 +11,12 @@ import 'images.dart';
 
 /// Holds a list of Docker containers.
 class Containers {
+  static final _self = Containers._internal();
+
   /// Factory ctor
   factory Containers() => _self;
-  Containers._internal();
 
-  static final _self = Containers._internal();
+  Containers._internal();
 
   /// returns a list of containers.
   List<Container> containers({bool excludeStopped = false}) {
@@ -90,14 +91,14 @@ class Containers {
   Container? findByContainerId(String containerid,
       {bool excludeStopped = false}) {
     final list = containers(excludeStopped: excludeStopped);
-    var _containerid = containerid;
+    var containerid0 = containerid;
 
-    if (_containerid.length > 12) {
-      _containerid = _containerid.substring(0, 12);
+    if (containerid0.length > 12) {
+      containerid0 = containerid0.substring(0, 12);
     }
 
     for (final container in list) {
-      if (_containerid == container.containerid) {
+      if (containerid0 == container.containerid) {
         return container;
       }
     }

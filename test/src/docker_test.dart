@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_print
-
 @Timeout(Duration(seconds: 45))
 library;
 
@@ -20,7 +18,7 @@ void main() {
     'docker container rm test_container'
         .start(nothrow: true, progress: Progress.devNull());
   });
-  test('docker pull', () async {
+  test('docker pull', () {
     final imagePulled = Docker().pull('hello-world');
 
     final imageFound = Docker().findImageByName('hello-world');
@@ -28,7 +26,7 @@ void main() {
     expect(imagePulled, equals(imageFound));
   });
 
-  test('docker create', () async {
+  test('docker create', () {
     final imagePulled = Docker().pull('hello-world');
 
     final container = Docker().create(imagePulled, 'test_container');
@@ -42,7 +40,7 @@ void main() {
         isTrue);
   });
 
-  test('docker start/stop container', () async {
+  test('docker start/stop container', () {
     final imagePulled = Docker().pull('alpine');
     Docker().pull('hello-world');
 
@@ -90,7 +88,7 @@ void main() {
     c2.delete();
   });
 
-  test('docker delete container', () async {
+  test('docker delete container', () {
     final imagePulled = Docker().pull('hello-world');
 
     if (Docker().findContainerByName('test_container') == null) {
@@ -117,9 +115,7 @@ void main() {
     final container = alpineImage.create('alpine_sleep_inifinity',
         argString: 'sleep infinity');
 
-    if (Docker().findContainerByName('alpine_sleep_inifinity') == null) {
-      print('Huston we have a container');
-    }
+    expect(Docker().findContainerByName('alpine_sleep_inifinity'), isNotNull);
 
     // start the container.
     container.start();

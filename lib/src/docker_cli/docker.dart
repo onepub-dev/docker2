@@ -63,10 +63,10 @@ class Docker {
   /// ubuntu
   /// ubuntu:latest
   Image pull(String fullname) {
-    final _imageName = ImageName.fromName(fullname);
+    final imageName0 = ImageName.fromName(fullname);
 
-    Image? image = Image.fromName(_imageName.fullname)..pull();
-    image = Images().findByName(_imageName.fullname);
+    Image? image = Image.fromName(imageName0.fullname)..pull();
+    image = Images().findByName(imageName0.fullname);
     if (image == null) {
       throw ImageNotFoundException(fullname);
     }

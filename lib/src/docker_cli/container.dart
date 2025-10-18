@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:meta/meta.dart';
+
 import 'containers.dart';
 import 'docker.dart';
 import 'exceptions.dart';
@@ -9,9 +11,28 @@ import 'volume.dart';
 import 'volumes.dart';
 
 /// A docker container.
+@immutable
 class Container {
+  /// id of the container (the 12 char version)
+  final String containerid;
+
+  /// the id of the image this container is based on.
+  final String imageid;
+
+  /// the create date/time of this container.
+  final String created;
+
+  /// The status of this container.
+  final String status;
+
+  /// The ports used by this container
+  final String ports;
+
+  /// The name of this container.
+  final String name;
+
   /// construct a docker container object from its parts.
-  Container({
+  const Container({
     required this.containerid,
     required this.imageid,
     required this.created,
@@ -25,14 +46,13 @@ class Container {
   factory Container.create(Image image,
       {List<VolumeMount> volumes = const <VolumeMount>[],
       bool readonly = false}) {
-    var volarg = '';
+    final volarg = StringBuffer();
     if (volumes.isNotEmpty) {
       for (final mount in volumes) {
         final readonlyArg = readonly ? ',readonly' : '';
 
-        // ignore: use_string_buffers
-        volarg += "--mount 'type=volume,source=${mount.volume.name}"
-            ",destination=${mount.mountPath}$readonlyArg'";
+        volarg.write("--mount 'type=volume,source=${mount.volume.name}"
+            ",destination=${mount.mountPath}$readonlyArg'");
       }
     }
     final containerid =
@@ -41,31 +61,12 @@ class Container {
     return Containers().findByContainerId(containerid)!;
   }
 
-  /// id of the container (the 12 char version)
-  String containerid;
-
-  /// the id of the image this container is based on.
-  String imageid;
-
-  /// the create date/time of this container.
-  String created;
-
-  /// The status of this container.
-  String status;
-
-  /// The ports used by this container
-  String ports;
-
-  /// The name of this container.
-  String name;
-
   /// Returns true if [other] has the same containerid as this
   /// container.
   /// We use the shorter 12 character version of the id.
   bool isSame(Container other) => containerid == other.containerid;
 
   @override
-  // ignore: avoid_equals_and_hash_code_on_mutable_classes, hash_and_equals
   bool operator ==(covariant Container other) {
     if (identical(this, other)) {
       return true;
@@ -91,9 +92,11 @@ class Container {
 
     final list = jsonDecode(line) as List<dynamic>;
     for (final v in list) {
+      // it's json.
       // ignore: avoid_dynamic_calls
       final type = v['Type'] as String;
       if (type == 'volume') {
+        // it's json.
         // ignore: avoid_dynamic_calls
         final name = v['Name']! as String;
         final volume = Volumes().findByName(name);
@@ -109,7 +112,6 @@ class Container {
   }
 
   @override
-  // ignore: avoid_equals_and_hash_code_on_mutable_classes
   int get hashCode => containerid.hashCode;
 
   /// returns the image based on this image's id.
@@ -190,13 +192,13 @@ class Container {
 /// Describes a [Volume] and where it is to be mounted
 /// in a container.
 class VolumeMount {
-  /// Describes a [Volume] and where it is to be mounted
-  /// in a container.
-  VolumeMount(this.volume, this.mountPath);
-
   /// The volume to mount.
   Volume volume;
 
   /// The path within the container the volume is to be mounted into.
   String mountPath;
+
+  /// Describes a [Volume] and where it is to be mounted
+  /// in a container.
+  VolumeMount(this.volume, this.mountPath);
 }

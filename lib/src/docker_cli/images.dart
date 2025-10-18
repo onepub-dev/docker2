@@ -12,6 +12,10 @@ import 'image.dart';
 
 /// Class used to obtain a list of images.
 class Images {
+  late final List<Image>? _imageCache;
+
+  static final _self = Images._internal();
+
   /// Returns a factory [Images]
   factory Images() => _self;
 
@@ -21,10 +25,6 @@ class Images {
   }
 
   Images._internal() : _imageCache = null;
-
-  late final List<Image>? _imageCache;
-
-  static final _self = Images._internal();
 
   /// Gets a list of of docker images.
   List<Image> get images {

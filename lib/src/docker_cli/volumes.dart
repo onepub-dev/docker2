@@ -10,11 +10,12 @@ import 'volume.dart';
 
 /// Holds a list of Docker containers.
 class Volumes {
+  static final _self = Volumes._internal();
+
   /// Factory ctor
   factory Volumes() => _self;
-  Volumes._internal();
 
-  static final _self = Volumes._internal();
+  Volumes._internal();
 
   /// returns a list of containers.
   List<Volume> volumes() {
@@ -83,12 +84,12 @@ class Volumes {
 
 /// A volume label containing the key and value
 class VolumeLabel {
-  /// A volume label containing the key and value
-  VolumeLabel(this.key, this.value);
-
   /// The key
   String key;
 
   /// The value
   String value;
+
+  /// A volume label containing the key and value
+  VolumeLabel(this.key, this.value);
 }

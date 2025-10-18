@@ -9,7 +9,7 @@ import 'package:docker2/src/docker_cli/exceptions.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('container create', () async {
+  test('container create', () {
     final images = Images().findAllByName('hello-world:latest');
 
     Image? hellow;
@@ -29,7 +29,7 @@ void main() {
     container.delete();
   });
 
-  test('container create with volume', () async {
+  test('container create with volume', () {
     final images = Images().findAllByName('hello-world:latest');
 
     Image? hellow;

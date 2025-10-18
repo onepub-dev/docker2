@@ -10,6 +10,19 @@ import 'image.dart';
 
 /// Used to parse and hold the components of a docker image name.
 class ImageName {
+  /// The registry where this image is located.
+  String? registry;
+
+  /// The repository name of this image.
+  String? repository;
+
+  /// The simple name of this image.
+  late String name;
+
+  /// the tag name of this image. Defaults to 'latest' if an tag
+  /// is not supplied.
+  String? tag;
+
   /// construct an image name from it sparts.
   ImageName(this.registry, this.repository, this.name, this.tag);
 
@@ -27,32 +40,19 @@ class ImageName {
   /// Constructs an [ImageName] from just its repo/name with an optional
   /// tag.
   ImageName.fromRepositoryAndName(String repositoryAndName, {String? tag}) {
-    var _repositoryAndName = repositoryAndName;
+    var repositoryAndName0 = repositoryAndName;
 
     if (tag != null) {
-      _repositoryAndName += ':$tag';
+      repositoryAndName0 += ':$tag';
     }
 
-    final parsed = _parseName(_repositoryAndName);
+    final parsed = _parseName(repositoryAndName0);
 
     name = parsed.name;
     repository = parsed.repository;
     registry = parsed.registry;
     this.tag = parsed.tag;
   }
-
-  /// The registry where this image is located.
-  String? registry;
-
-  /// The repository name of this image.
-  String? repository;
-
-  /// The simple name of this image.
-  late String name;
-
-  /// the tag name of this image. Defaults to 'latest' if an tag
-  /// is not supplied.
-  String? tag;
 
   /// Returns the full name of the image.
   /// Any parts that we don't have are excluded.

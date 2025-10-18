@@ -4,6 +4,8 @@
  * Written by Brett Sutton <bsutton@onepub.dev>, Jan 2022
  */
 
+import 'package:meta/meta.dart';
+
 import 'container.dart';
 import 'containers.dart';
 import 'docker.dart';
@@ -11,7 +13,19 @@ import 'exceptions.dart';
 import 'image_name.dart';
 
 /// Represents a docker image.
+@immutable
 class Image {
+  final ImageName _imageName;
+
+  /// The id of this image. We use the short 12 char verison.
+  final String? imageid;
+
+  /// The date time this image was created.
+  final String? created;
+
+  /// The size on disk of this image in bytes.
+  final String? size;
+
   /// Creates an image with the given properties.
   /// Note: this doesn't create a docker image just
   /// an in memory representation of one.
@@ -33,17 +47,6 @@ class Image {
         created = null,
         size = null,
         _imageName = ImageName.fromName(imageName);
-
-  final ImageName _imageName;
-
-  /// The id of this image. We use the short 12 char verison.
-  final String? imageid;
-
-  /// The date time this image was created.
-  final String? created;
-
-  /// The size on disk of this image in bytes.
-  final String? size;
 
   /// Returns the full name of the image
   String get fullname => _imageName.fullname;
@@ -149,11 +152,9 @@ class Image {
   }
 
   @override
-  // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(covariant Image other) =>
       (identical(this, other)) || imageid == other.imageid;
 
   @override
-  // ignore: avoid_equals_and_hash_code_on_mutable_classes
   int get hashCode => imageid.hashCode;
 }

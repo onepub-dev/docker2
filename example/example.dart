@@ -4,7 +4,6 @@
  * Written by Brett Sutton <bsutton@onepub.dev>, Jan 2022
  */
 
-
 import 'package:dcli/dcli.dart';
 import 'package:docker2/docker2.dart';
 
@@ -28,6 +27,7 @@ void main(List<String> args) {
       alpineImage.create('alpine_sleep_inifinity', argString: 'sleep infinity');
 
   if (Docker().findContainerByName('alpine_sleep_inifinity') == null) {
+    // cli script
     // ignore: avoid_print
     print('Huston we have a container');
   }

@@ -10,7 +10,7 @@ import 'package:path/path.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('build ...', () async {
+  test('build ...', ()  {
     final pathToHelloDocker = join(DartProject.self.pathToProjectRoot, 'test',
         'fixtures', 'hello.dockerfile');
     build(
