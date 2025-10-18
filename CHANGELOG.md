@@ -1,3 +1,6 @@
+# 5.0.0
+- upgraded to dcli 8.10 and lint hard 6.x Mde core classes immutable, image, container, volume.
+
 # 4.9.0
 - added a sleep to volume create as the volume isn't always immediately
 available to the ls command.
