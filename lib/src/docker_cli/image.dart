@@ -74,6 +74,19 @@ class Image {
     }
   }
 
+  /// Returns true if the image exists locally.
+  bool existsLocally() {
+    try {
+      final result = dockerRun('image', 'inspect ${_imageName.fullname}');
+
+      // If dockerRun returns any lines, the image exists.
+      return result.isNotEmpty;
+    } on DockerCommandFailed catch (e, _) {
+      // dockerRun will throw an exception if the image does not exist.
+      return false;
+    }
+  }
+
   /// Pulls a docker image from a remote repository using the
   /// images [fullname]
   void pull() {
