@@ -2,3 +2,4 @@
 .dart_tool
 .history
 .packages
+custom_lint.log
