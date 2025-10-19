@@ -1,5 +1,10 @@
+# 6.0.0
+- build now throws a DockerBuildException if the build fails. Previously it would return with no error. 
+- Added method to images `existsLocally` to test if an image is on the local system. 
+- upgraded to dcli 8.1.1 as it has importeant bug fixes - specifically that non-zero exit codes were not being returned.
+
 # 5.0.0
-- upgraded to dcli 8.10 and lint hard 6.x Mde core classes immutable, image, container, volume.
+- upgraded to dcli 8.10 and lint hard 6.x Made core classes immutable, image, container, volume.
 
 # 4.9.0
 - added a sleep to volume create as the volume isn't always immediately
