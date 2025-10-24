@@ -1,3 +1,6 @@
+# 6.1.0
+- upgraded to dcli 8.2.0 which has a fix for a major - process hangs - bug.
+
 # 6.0.0
 - build now throws a DockerBuildException if the build fails. Previously it would return with no error. 
 - Added method to images `existsLocally` to test if an image is on the local system. 
