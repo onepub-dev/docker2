@@ -1,3 +1,6 @@
+# 6.2.0
+- upgraded to dcli 9.0.1
+
 # 6.1.0
 - upgraded to dcli 8.2.0 which has a fix for a major - process hangs - bug.
 
