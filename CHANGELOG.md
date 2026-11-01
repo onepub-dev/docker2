@@ -1,3 +1,6 @@
+# 6.3.0
+- upgraded deps and lint fixes.
+
 # 6.2.0
 - upgraded to dcli 9.0.1
 
