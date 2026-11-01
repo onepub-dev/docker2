@@ -90,7 +90,6 @@ class Volume {
 
   @override
   // the name is immutable.
-  // ignore: avoid_equals_and_hash_code_on_mutable_classes
   int get hashCode => name.hashCode;
 
   @override

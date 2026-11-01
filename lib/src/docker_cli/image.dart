@@ -81,7 +81,7 @@ class Image {
 
       // If dockerRun returns any lines, the image exists.
       return result.isNotEmpty;
-    } on DockerCommandFailed catch (e, _) {
+    } on DockerCommandFailed catch (_) {
       // dockerRun will throw an exception if the image does not exist.
       return false;
     }

@@ -3,3 +3,4 @@
 .history
 .packages
 custom_lint.log
+logs/analyzer.txt
